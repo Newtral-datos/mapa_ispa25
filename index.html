@@ -32,22 +32,27 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
-      padding: 12px;
+      padding: 0;
+    }
+
+    body {
       font-family: var(--font-main);
+      background: #f3f4f5;
     }
 
     #map-container {
       position: relative;
       width: 100%;
-      max-width: 1200px;
-      height: 600px;
-      margin: auto;
-      border-radius: 16px;
+      height: 100vh;           /* antes: 600px */
+      max-width: none;         /* quitamos límite de 1200px */
+      margin: 0;               /* sin márgenes alrededor */
+      border-radius: 0;        /* sin esquinas redondeadas, ocupa toda la pantalla */
       overflow: hidden;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
-      background: #000;
+      box-shadow: none;        /* sin sombra de “tarjeta” */
+      background: transparent;
     }
 
     #map {
@@ -55,7 +60,6 @@
       height: 100%;
     }
 
-    /* CONTROLES SUPERIORES (MUCHO MÁS LIGEROS) */
     .controls-container {
       position: absolute;
       top: 10px;
@@ -77,7 +81,6 @@
       pointer-events: auto;
     }
 
-    /* Cartas pequeñas para cada control (menos botón aleatorio) */
     .dedication-filter-container,
     .slider-container,
     #geocoder-container {
@@ -90,7 +93,6 @@
       justify-content: center;
     }
 
-    /* BOTÓN AYUNTAMIENTO ALEATORIO */
     .random-btn-wrapper {
       padding: 0;
     }
@@ -130,7 +132,6 @@
       box-shadow: 0 4px 12px rgba(1, 243, 179, 0.25);
     }
 
-    /* SELECTOR DEDICACIÓN */
     .dedication-filter-container {
       padding: 4px 12px;
       flex-direction: column;
@@ -178,7 +179,6 @@
       box-shadow: 0 0 0 2px rgba(1, 243, 179, 0.25);
     }
 
-    /* SLIDER SUELDO */
     .slider-container {
       padding: 4px 12px;
       display: grid;
@@ -259,7 +259,6 @@
       box-shadow: 0 0 0 3px rgba(1, 243, 179, 0.25);
     }
 
-    /* GEOCODER MAPBOX – compacto, sin doble fondo */
     #geocoder-container {
       padding: 0;
       min-width: 210px;
@@ -286,7 +285,7 @@
       font-size: 12px;
       height: 34px;
       line-height: 34px;
-      padding: 0 10px 0 30px; /* centrado vertical, padding lateral */
+      padding: 0 10px 0 30px;
     }
 
     .mapboxgl-ctrl-geocoder .mapboxgl-ctrl-geocoder--icon {
@@ -308,7 +307,6 @@
       box-shadow: none !important;
     }
 
-    /* POPUP MAPBOX (igual que tenías) */
     .mapboxgl-popup {
       border: none !important;
     }
@@ -383,46 +381,7 @@
       color: #000;
     }
 
-    /* RESPONSIVE */
-    @media (max-width: 1024px) {
-      #map-container {
-        height: 520px;
-      }
-    }
-
-    @media (max-width: 900px) {
-      #map-container {
-        height: 500px;
-      }
-
-      .controls-container {
-        flex-direction: column;
-        align-items: stretch;
-        top: 8px;
-        max-width: 92%;
-      }
-
-      .dedication-filter-container,
-      .slider-container {
-        width: 100%;
-      }
-
-      /* botón y geocoder centrados en columna */
-      .random-btn-wrapper,
-      #geocoder-container {
-        align-self: center;
-      }
-    }
-
     @media (max-width: 768px) {
-      body {
-        padding: 8px;
-      }
-
-      #map-container {
-        height: 480px;
-      }
-
       .controls-container {
         gap: 6px;
       }
