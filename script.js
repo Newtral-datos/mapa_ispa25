@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
   map.on('load', function() {
     map.addSource('geodata_ispa25', {
       type: 'vector',
-      url: 'mapbox://newtral.4rmn91ff'
+      url: 'mapbox://newtral.3mbjsb0o'
     });
 
     function formatPopulation(value) {
