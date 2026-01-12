@@ -1,19 +1,49 @@
 document.addEventListener("DOMContentLoaded", function() {
-  mapboxgl.accessToken = 'pk.eyJ1IjoibmV3dHJhbCIsImEiOiJjazJrcDY4Y2gxMmg3M2JvazU4OXV6NHZqIn0.VO5GkvBq_PSJHvX7T8H9jQ';
+  // Registrar el protocolo PMTiles
+  let protocol = new pmtiles.Protocol();
+  maplibregl.addProtocol("pmtiles", protocol.tile);
 
-  const map = new mapboxgl.Map({
+  // Inicializar el mapa con MapLibre y mapa base GRIS (CartoDB Positron)
+  const map = new maplibregl.Map({
     container: 'map',
-    style: 'mapbox://styles/newtral/cmfcdokcl006f01sd20984lhq',
+    style: {
+      version: 8,
+      sources: {
+        'carto-light': {
+          type: 'raster',
+          tiles: [
+            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
+          ],
+          tileSize: 256,
+          attribution: '© OpenStreetMap contributors, © CARTO'
+        }
+      },
+      layers: [
+        {
+          id: 'carto-light',
+          type: 'raster',
+          source: 'carto-light',
+          minzoom: 0,
+          maxzoom: 22
+        }
+      ]
+    },
     center: [-3.7038, 40.4168],
     zoom: 5
   });
 
+  // Añadir controles de navegación
+  map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
   const POLYGON_LAYER_ID = 'geodata_ispa25_fill';
 
   map.on('load', function() {
+    // Cargar datos desde PMTiles local
     map.addSource('geodata_ispa25', {
       type: 'vector',
-      url: 'mapbox://newtral.3mbjsb0o'
+      url: 'pmtiles://./geodata_ispa25.pmtiles'
     });
 
     function formatPopulation(value) {
@@ -74,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     });
 
-    const popup = new mapboxgl.Popup({ closeButton: true, closeOnClick: true });
+    const popup = new maplibregl.Popup({ closeButton: true, closeOnClick: true });
 
     function showPopup(feature, lngLat) {
       const ayuntamiento = feature.properties.AYUNTAMIENTO || 'Desconocido';
@@ -169,9 +199,44 @@ document.addEventListener("DOMContentLoaded", function() {
       }, 500);
     });
 
-    const geocoder = new MapboxGeocoder({ 
-      accessToken: mapboxgl.accessToken,
-      mapboxgl: mapboxgl,
+    // Geocoder usando Nominatim (OpenStreetMap) - 100% GRATUITO
+    const geocoder = new MaplibreGeocoder({
+      forwardGeocode: async (config) => {
+        const features = [];
+        try {
+          const request = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(config.query)}&format=geojson&polygon_geojson=1&addressdetails=1&countrycodes=es`;
+          const response = await fetch(request);
+          const geojson = await response.json();
+          
+          for (const feature of geojson.features) {
+            const center = [
+              feature.bbox[0] + (feature.bbox[2] - feature.bbox[0]) / 2,
+              feature.bbox[1] + (feature.bbox[3] - feature.bbox[1]) / 2
+            ];
+            const point = {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: center
+              },
+              place_name: feature.properties.display_name,
+              properties: feature.properties,
+              text: feature.properties.display_name,
+              place_type: ['place'],
+              center: center
+            };
+            features.push(point);
+          }
+        } catch (e) {
+          console.error('Error en geocoding:', e);
+        }
+
+        return {
+          features: features
+        };
+      }
+    }, {
+      maplibregl: maplibregl,
       placeholder: "   Buscar ubicación...",
       marker: false,
       flyTo: { zoom: 8, speed: 0.5, curve: 2 }
