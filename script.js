@@ -31,7 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
       ]
     },
     center: [-3.7038, 40.4168],
-    zoom: 5
+    zoom: 5,
+    minZoom: 5
   });
 
   // Añadir controles de navegación
