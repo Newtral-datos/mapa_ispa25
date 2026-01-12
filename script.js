@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // Cargar datos desde PMTiles con URL ABSOLUTA
     map.addSource('geodata_ispa25', {
       type: 'vector',
-      url: 'pmtiles://https://newtral-datos.github.io/geodata_ispa25.pmtiles'
+      url: 'https://newtral-datos.github.io/geodata_ispa25.pmtiles'
     });
 
     function formatPopulation(value) {
@@ -252,3 +252,4 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 });
+
