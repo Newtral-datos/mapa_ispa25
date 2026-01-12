@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", function() {
   const POLYGON_LAYER_ID = 'geodata_ispa25_fill';
 
   map.on('load', function() {
-    // Cargar datos desde PMTiles local
+    // Cargar datos desde PMTiles (mismo directorio)
     map.addSource('geodata_ispa25', {
       type: 'vector',
-      url: 'pmtiles://./geodata_ispa25.pmtiles'
+      url: 'pmtiles://geodata_ispa25.pmtiles'
     });
 
     function formatPopulation(value) {
