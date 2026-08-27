@@ -1,34 +1,40 @@
-document.addEventListener("DOMContentLoaded", function() {
+const CARTO_STYLE_URL = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
+
+// El estilo de CARTO fija el texto de los topónimos administrativos a
+// {name_en}. Sustituirlo por {name} (nombre local del esquema OpenMapTiles)
+// hace que salgan en español en vez de en inglés.
+function localizarEtiquetasCarto(estilo) {
+  const layers = estilo.layers.map((layer) => {
+    const textField = layer.layout?.['text-field'];
+    const localizado =
+      textField === undefined
+        ? undefined
+        : JSON.parse(JSON.stringify(textField).replaceAll('name_en', 'name'));
+    return {
+      ...layer,
+      ...(localizado !== undefined && { layout: { ...layer.layout, 'text-field': localizado } })
+    };
+  });
+  return { ...estilo, layers };
+}
+
+document.addEventListener("DOMContentLoaded", async function() {
   // Registrar el protocolo PMTiles
   let protocol = new pmtiles.Protocol();
   maplibregl.addProtocol("pmtiles", protocol.tile);
 
-  // Inicializar el mapa con MapLibre y mapa base GRIS (CartoDB Positron)
+  const cartoStyleRaw = await fetch(CARTO_STYLE_URL).then((r) => r.json());
+  const cartoStyle = localizarEtiquetasCarto(cartoStyleRaw);
+
+  // Inicializar el mapa con MapLibre y mapa base vectorial CARTO Positron
   const map = new maplibregl.Map({
     container: 'map',
     style: {
       version: 8,
-      sources: {
-        'carto-light': {
-          type: 'raster',
-          tiles: [
-            'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-            'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-            'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'
-          ],
-          tileSize: 256,
-          attribution: '© OpenStreetMap contributors, © CARTO'
-        }
-      },
-      layers: [
-        {
-          id: 'carto-light',
-          type: 'raster',
-          source: 'carto-light',
-          minzoom: 0,
-          maxzoom: 22
-        }
-      ]
+      sources: cartoStyle.sources,
+      sprite: cartoStyle.sprite,
+      glyphs: cartoStyle.glyphs,
+      layers: cartoStyle.layers
     },
     center: [-3.7038, 40.4168],
     zoom: 5,
