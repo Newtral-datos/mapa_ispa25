@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", async function() {
       const min = Number(this.min);
       const max = Number(this.max);
       const percentage = ((this.value - min) / (max - min)) * 100;
-      this.style.background = `linear-gradient(to right, #ddd ${percentage}%, #01f3b3 ${percentage}%)`;
+      this.style.background = `linear-gradient(to right, #d9dcda ${percentage}%, #00b38a ${percentage}%)`;
       applyCombinedFilters();
     });
 
@@ -264,7 +264,9 @@ document.addEventListener("DOMContentLoaded", async function() {
       maplibregl: maplibregl,
       placeholder: "   Buscar ubicación...",
       marker: false,
-      flyTo: { zoom: 8, speed: 0.5, curve: 2 }
+      flyTo: { zoom: 8, speed: 0.5, curve: 2 },
+      showResultsWhileTyping: true,
+      debounceSearch: 300
     });
 
     document.getElementById("geocoder-container").appendChild(geocoder.onAdd(map));
@@ -272,7 +274,7 @@ document.addEventListener("DOMContentLoaded", async function() {
     geocoder.on('result', function() {
       salaryFilter.value = salaryFilter.min;
       updateSalaryValue(salaryFilter.min);
-      salaryFilter.style.background = `linear-gradient(to right, #ddd 0%, #01f3b3 0%)`;
+      salaryFilter.style.background = `linear-gradient(to right, #d9dcda 0%, #00b38a 0%)`;
       applyCombinedFilters();
     });
   });
