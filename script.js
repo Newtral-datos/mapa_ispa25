@@ -107,7 +107,25 @@ document.addEventListener("DOMContentLoaded", async function() {
       paint: {
         'fill-color': fillColorExpr,
         'fill-opacity': 0.7,
-        'fill-outline-color': '#000000'
+        // Con fill-opacity < 1 el antialiasing del propio relleno deja una
+        // línea visible en cada borde de tesela vectorial, que al cubrir el
+        // polígono todo el mapa se ve como una cuadrícula (bug conocido de
+        // MapLibre/Mapbox GL, no relacionado con fill-outline-color).
+        'fill-antialias': false
+      }
+    });
+
+    // Línea aparte para los bordes en vez de fill-outline-color: ese paint
+    // dibuja el contorno por tesela y con fill-opacity < 1 se ve la cuadrícula
+    // de teselas en todo el mapa (mismo bug).
+    map.addLayer({
+      id: `${POLYGON_LAYER_ID}_outline`,
+      type: 'line',
+      source: 'geodata_ispa25',
+      'source-layer': 'geodata_ispa25',
+      paint: {
+        'line-color': '#000000',
+        'line-width': 0.5
       }
     });
 
